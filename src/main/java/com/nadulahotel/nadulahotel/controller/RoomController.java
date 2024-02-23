@@ -5,18 +5,17 @@ import com.nadulahotel.nadulahotel.response.RoomResponse;
 import com.nadulahotel.nadulahotel.service.RoomServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.List;
 
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 @RequestMapping("/rooms")
 public class RoomController {
@@ -31,4 +30,11 @@ public class RoomController {
 
 
     }
+
+   @GetMapping("/room/types")
+    public List<String> getRoomTypes(){
+        return roomService.getAllRoomTypes();
+    }
+
+    
 }
