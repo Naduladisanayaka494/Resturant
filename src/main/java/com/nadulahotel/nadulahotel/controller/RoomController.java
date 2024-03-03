@@ -1,6 +1,8 @@
 package com.nadulahotel.nadulahotel.controller;
 
+import com.nadulahotel.nadulahotel.exception.InternalServerException;
 import com.nadulahotel.nadulahotel.exception.PhotoRetrievalException;
+import com.nadulahotel.nadulahotel.exception.ResourceNotFoundException;
 import com.nadulahotel.nadulahotel.model.BookRoom;
 import com.nadulahotel.nadulahotel.model.Room;
 import com.nadulahotel.nadulahotel.response.RoomResponse;
@@ -18,6 +20,7 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
@@ -70,11 +73,55 @@ public class RoomController {
     }
 
     @DeleteMapping("/delete/room/{roomId}")
-    public ResponseEntity<Void> deleteRoom(@PathVariable Long roomId){
+    public ResponseEntity<Void> deleteRoom(@PathVariable Long roomId) {
         roomService.deleteRoom(roomId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
     }
+
+    @PutMapping("/update/{roomId}")
+    public ResponseEntity<RoomResponse> updateRoom(@PathVariable Long roomId,
+                                                   @RequestParam(required = false) String roomType,
+                                                   @RequestParam(required = false) BigDecimal roomPrice,
+                                                   @RequestParam(required = false) MultipartFile photo)
+            throws IOException, SQLException, PhotoRetrievalException, InternalServerException {
+        byte[] photoBytes = null;
+        if (photo != null && !photo.isEmpty()) {
+            photoBytes = photo.getBytes();
+        }
+
+        Room theRoom = roomService.updateRoom(roomId, roomType, roomPrice, photoBytes);
+        RoomResponse roomResponse = getRoomResponse(theRoom, photoBytes != null ? "Photo updated" : "Photo not updated");
+        return ResponseEntity.ok(roomResponse);
+    }
+
+
+    @GetMapping("/room/{roomId}")
+    public ResponseEntity<RoomResponse> getRoomById(@PathVariable Long roomId) {
+        Optional<Room> optionalRoom = roomService.getRoomById(roomId);
+        Room room = optionalRoom.orElseThrow(() -> new ResourceNotFoundException("Room not found"));
+        byte[] photoBytes;
+        try {
+            photoBytes = roomService.getRoomPhotoByRoomId(roomId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        RoomResponse roomResponse;
+        try {
+            String base64Photo = null;
+            if (photoBytes != null && photoBytes.length > 0) {
+                base64Photo = Base64.encodeBase64String(photoBytes);
+            }
+            roomResponse = getRoomResponse(room, base64Photo);
+        } catch (PhotoRetrievalException e) {
+            throw new RuntimeException(e);
+        }
+        return ResponseEntity.ok(roomResponse);
+    }
+
+
+
+
 }
 
 
