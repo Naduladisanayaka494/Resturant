@@ -42,4 +42,7 @@ public class BookRoomResponse {
         this.checkOutDate = checkOutDate;
         this.bookingConfirmationCode = bookingConfirmationCode;
     }
+
+    public BookRoomResponse(Long bookingId, LocalDate checkInDate, LocalDate checkOutDate, String guestFullName, String guestEmail, int numOfAdults, String bookingConfirmationCode, RoomResponse room) {
+    }
 }

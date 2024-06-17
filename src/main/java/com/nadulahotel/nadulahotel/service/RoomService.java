@@ -94,6 +94,7 @@ public class RoomService implements RoomServiceImpl {
     }
 
     @Override
+
     public Optional<Room> getRoomById(Long roomId) {
         return Optional.of(roomRepository.findById(roomId).get());
     }
