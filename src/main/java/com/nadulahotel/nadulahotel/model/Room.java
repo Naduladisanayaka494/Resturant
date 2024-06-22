@@ -1,5 +1,8 @@
 package com.nadulahotel.nadulahotel.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.nadulahotel.nadulahotel.response.BlobSerializer;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,9 +26,11 @@ public class Room {
     private BigDecimal roomPrice;
     private boolean isBooked=false;
     @OneToMany(mappedBy = "room",fetch=FetchType.LAZY,cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<BookRoom> bookings;
 
     @Lob
+    @JsonSerialize(using = BlobSerializer.class)
     private Blob photo;
     public Room() {
         this.bookings= new ArrayList<>();

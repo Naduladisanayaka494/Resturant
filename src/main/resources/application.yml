@@ -1,7 +1,7 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
       dialect: org.hibernate.dialect.MySQLDialect
     show-sql: true
   h2:
@@ -19,4 +19,3 @@ server:
     basic:
       enabled: false
   ignored: /**
-
